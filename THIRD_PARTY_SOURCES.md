@@ -2,7 +2,7 @@
 
 This file identifies corresponding source archives for third-party runtime components included in the Linux distribution. These archives contain third-party source code only; they do not contain the NETMAP application source code.
 
-Download the matching archives from the **Assets** section of the same NETMAP GitHub Release. Verify the files using the SHA-256 values recorded in the release asset manifest before using them.
+Download the matching archives from the **Assets** section of the same NETMAP GitHub Release. Verify each source archive against the upstream SHA-256 value recorded below before using it. Verify the NETMAP application ZIP separately with the signed `SHA256SUMS` manifest and its detached `SHA256SUMS.asc` signature.
 
 ## PySide6 and Shiboken6 6.12.0
 
