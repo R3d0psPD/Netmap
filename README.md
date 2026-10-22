@@ -22,12 +22,13 @@ If you want a custom clone-folder name, use that name in the last two commands a
 - Nmap installed and available as `nmap` in `PATH`. Nmap is not bundled.
 - An operating-system credential manager, such as KWallet or Secret Service, if you want NETMAP to save provider API keys.
 - Internet access for remote AI services.
+- `gpg` for verifying the release manifest signature when using the launcher.
 
 On Kali Linux or Debian-based systems, install Nmap with:
 
 ```bash
 sudo apt update
-sudo apt install nmap
+sudo apt install nmap gnupg
 ```
 
 This release does not include a native Windows package.
@@ -47,6 +48,21 @@ NETMAP scan history, target history, settings, and AI conversation history are s
 The compiled release stores its local database under `$XDG_DATA_HOME/netmap`, or `~/.local/share/netmap` when `XDG_DATA_HOME` is not set. A source-development checkout uses the separate legacy `~/.netmap` directory. This prevents the downloaded release from reusing scan history created by the source-development copy on the same computer.
 
 Each operating-system account has its own home/data directory. Do not share your local database or screenshots containing scan details with others unless you have reviewed and sanitized them.
+
+## Download integrity and authenticity
+
+The launcher verifies the detached OpenPGP signature on `SHA256SUMS` before trusting the SHA-256 checksum of the application ZIP. The public signing key is included as `NETMAP-RELEASE-KEY.asc`.
+
+Release signing-key fingerprint: `0B45 B609 3134 D3E3 ADB9 7C02 EDB2 243C 7827 C44D`. For manual verification, obtain the ZIP, `SHA256SUMS`, `SHA256SUMS.asc`, and `NETMAP-RELEASE-KEY.asc` from the same release, then run:
+
+```bash
+gpg --import NETMAP-RELEASE-KEY.asc
+gpg --show-keys --fingerprint NETMAP-RELEASE-KEY.asc
+gpg --verify SHA256SUMS.asc SHA256SUMS
+sha256sum -c SHA256SUMS
+```
+
+Before relying on the signature, compare the full fingerprint with a separately trusted NETMAP developer source. SHA-256 detects content changes; the signature helps establish that the checksum manifest was signed by the holder of the corresponding private key. Neither signature nor checksum guarantees that software is vulnerability-free.
 
 ## Usage and authorization
 
