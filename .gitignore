@@ -1,0 +1,31 @@
+# NETMAP is distributed through GitHub Release assets, not as repository source.
+NETMAP
+NETMAP-*
+*.zip
+*.tar.xz
+SHA256SUMS
+
+# Never place NETMAP application source or development artifacts here.
+*.py
+*.pyw
+*.pyc
+*.pyo
+tests/
+tools/
+src/
+.venv/
+venv/
+build/
+dist/
+*.build/
+*.dist/
+
+# Sensitive or local data must not be committed.
+.env*
+*.env
+*credentials*
+*secrets*
+*.db
+*.sqlite*
+*.log
+__pycache__/
