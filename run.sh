@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 # Small bootstrap launcher. The NETMAP application itself is downloaded as a
-# checksum-verified compiled release; this repository does not contain Python
+# signature- and checksum-verified compiled release; this repository does not contain Python
 # application source code.
 
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
@@ -10,13 +10,15 @@ RUNTIME_DIR="$ROOT_DIR/.runtime"
 DOWNLOAD_DIR="$RUNTIME_DIR/downloads"
 INSTALL_ROOT="$RUNTIME_DIR/apps"
 RELEASE_BASE="${NETMAP_RELEASE_DOWNLOAD_BASE:-https://github.com/R3d0psPD/Netmap/releases/latest/download}"
+RELEASE_SIGNING_FINGERPRINT="0B45B6093134D3E3ADB97C02EDB2243C7827C44D"
+SIGNING_KEY="$ROOT_DIR/NETMAP-RELEASE-KEY.asc"
 
 die() {
     printf 'NETMAP launcher error: %s\n' "$*" >&2
     exit 1
 }
 
-for tool in sha256sum unzip; do
+for tool in sha256sum unzip gpg; do
     command -v "$tool" >/dev/null 2>&1 || die "Required command '$tool' was not found. Install it using your Linux package manager."
 done
 
@@ -44,7 +46,32 @@ mkdir -p -- "$DOWNLOAD_DIR" "$INSTALL_ROOT"
 chmod 700 "$RUNTIME_DIR" "$DOWNLOAD_DIR" "$INSTALL_ROOT"
 
 manifest="$DOWNLOAD_DIR/SHA256SUMS"
+signature="$DOWNLOAD_DIR/SHA256SUMS.asc"
+[[ -f "$SIGNING_KEY" ]] || die "The pinned NETMAP release public key is missing."
 download_file "$RELEASE_BASE/SHA256SUMS" "$manifest"
+download_file "$RELEASE_BASE/SHA256SUMS.asc" "$signature"
+
+# Verify the manifest signature in an isolated temporary GPG home. Importing
+# the key is not enough: its fingerprint must match the pin in this launcher.
+gpg_home="$(mktemp -d "$RUNTIME_DIR/.gnupg.XXXXXX")" || die "Could not create a temporary GPG home."
+chmod 700 "$gpg_home"
+if ! GNUPGHOME="$gpg_home" gpg --batch --import "$SIGNING_KEY" >/dev/null 2>&1; then
+    rm -rf -- "$gpg_home"
+    die "Could not load the NETMAP release public key."
+fi
+if ! key_fingerprint="$(GNUPGHOME="$gpg_home" gpg --batch --with-colons --fingerprint --list-keys 2>/dev/null | awk -F: '$1=="pub" {pub++} $1=="fpr" && !printed {print $10; printed=1} END {if (pub != 1) exit 1}')"; then
+    rm -rf -- "$gpg_home"
+    die "The NETMAP release public key could not be identified."
+fi
+if [[ "$key_fingerprint" != "$RELEASE_SIGNING_FINGERPRINT" ]]; then
+    rm -rf -- "$gpg_home"
+    die "The NETMAP release public key fingerprint did not match the pinned key."
+fi
+if ! GNUPGHOME="$gpg_home" gpg --batch --verify "$signature" "$manifest" >/dev/null 2>&1; then
+    rm -rf -- "$gpg_home"
+    die "The SHA-256 manifest signature is invalid. The application was not started."
+fi
+rm -rf -- "$gpg_home"
 
 expected_hash=""
 archive_name=""
