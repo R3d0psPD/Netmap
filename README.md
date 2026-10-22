@@ -2,50 +2,19 @@
 
 NETMAP is an independent desktop application for using Nmap for authorized network discovery, service analysis, topology visualization, and reporting. It is not an official Nmap product.
 
-## Download and install
+## Install from a terminal
 
-Download the compiled application ZIP and the checksum file from the **Assets** section of the NETMAP GitHub release. Do not use `git clone` to install NETMAP: the distribution repository is not the application source repository.
-
-### Option A — Download from a terminal with curl
-
-The commands below download the release directly from GitHub. They will work when the distribution repository is accessible to your GitHub account.
+Run these commands from the directory where you want the `Netmap` folder to be created. No `cd` command is needed. This distribution repository must be publicly accessible (or your GitHub account must have access).
 
 ```bash
-mkdir -p ~/Downloads/netmap-1.1.1
-cd ~/Downloads/netmap-1.1.1
-
-curl --fail --location --show-error \
-  --output NETMAP-1.1.1-linux-x86_64.zip \
-  https://github.com/R3d0psPD/Netmap/releases/download/v1.1.1/NETMAP-1.1.1-linux-x86_64.zip
-
-curl --fail --location --show-error \
-  --output SHA256SUMS \
-  https://github.com/R3d0psPD/Netmap/releases/download/v1.1.1/SHA256SUMS
-
-sha256sum -c SHA256SUMS
-unzip NETMAP-1.1.1-linux-x86_64.zip
-cd NETMAP-Linux-x86_64
-./NETMAP
+git clone --depth 1 https://github.com/R3d0psPD/Netmap.git
+chmod +x Netmap/run.sh
+./Netmap/run.sh
 ```
 
-The checksum command must report `NETMAP-1.1.1-linux-x86_64.zip: OK` before you run the package.
+The launcher downloads the latest compiled Linux release, verifies its SHA-256 checksum, extracts it into the local `.runtime/` folder inside the clone, and starts NETMAP. It automatically uses `curl` or `wget` to download. Install `unzip` and `sha256sum` if they are not already available. The launcher never fetches the NETMAP Python application source code.
 
-### Option B — Download with wget
-
-```bash
-mkdir -p ~/Downloads/netmap-1.1.1
-cd ~/Downloads/netmap-1.1.1
-
-wget -O NETMAP-1.1.1-linux-x86_64.zip \
-  https://github.com/R3d0psPD/Netmap/releases/download/v1.1.1/NETMAP-1.1.1-linux-x86_64.zip
-wget -O SHA256SUMS \
-  https://github.com/R3d0psPD/Netmap/releases/download/v1.1.1/SHA256SUMS
-
-sha256sum -c SHA256SUMS
-unzip NETMAP-1.1.1-linux-x86_64.zip
-cd NETMAP-Linux-x86_64
-./NETMAP
-```
+If you want a custom clone-folder name, use that name in the last two commands as well.
 
 ## Requirements
 
@@ -73,9 +42,9 @@ Review scan-context and privacy options before sending prompts or scan details t
 
 ## Local data and privacy
 
-NETMAP scan history, target history, settings, and AI conversation history are stored locally for the current operating-system user. They are not included in this download and are not automatically sent to other NETMAP users.
+NETMAP scan history, target history, settings, and AI conversation history are stored locally for the current operating-system user. They are not included in the repository or release download and are not automatically sent to other NETMAP users.
 
-The compiled release stores its local database under `$XDG_DATA_HOME/netmap`, or `~/.local/share/netmap` when `XDG_DATA_HOME` is not set. A source-development checkout uses the separate legacy `~/.netmap` directory. This separation prevents the downloaded release from reusing scan history created by the source-development copy on the same computer.
+The compiled release stores its local database under `$XDG_DATA_HOME/netmap`, or `~/.local/share/netmap` when `XDG_DATA_HOME` is not set. A source-development checkout uses the separate legacy `~/.netmap` directory. This prevents the downloaded release from reusing scan history created by the source-development copy on the same computer.
 
 Each operating-system account has its own home/data directory. Do not share your local database or screenshots containing scan details with others unless you have reviewed and sanitized them.
 
@@ -85,7 +54,7 @@ Use NETMAP only against systems you own or have explicit permission to test. Sca
 
 ## Screenshots
 
-These screenshots were captured from a clean, isolated NETMAP profile with no saved scans, targets, conversations, or API keys. They are not screenshots of a developer's personal history or configuration.
+These screenshots were captured from a clean, isolated NETMAP profile with no saved scans, targets, conversations, or API keys. They do not show a developer's personal history or configuration.
 
 | | |
 | --- | --- |
@@ -104,6 +73,6 @@ These screenshots were captured from a clean, isolated NETMAP profile with no sa
 
 NETMAP is distributed as a compiled application under the proprietary terms in EULA.md. The NETMAP application source code is not included in this repository or the release package. Unauthorized redistribution of NETMAP is prohibited, subject to rights that cannot be restricted under applicable law or the licenses of third-party components.
 
-GitHub automatically displays `Source code (zip)` and `Source code (tar.gz)` for release tags. Those links snapshot this distribution repository, which contains only documentation, screenshots, branding, and third-party license materials—not the NETMAP application Python source code. End users should download the compiled ZIP listed in the release assets.
+GitHub automatically displays `Source code (zip)` and `Source code (tar.gz)` for release tags. Those links snapshot this distribution repository, including the small shell bootstrap launcher, documentation, screenshots, branding, and third-party license materials—not the NETMAP application Python source code. The launcher downloads the verified compiled release ZIP.
 
 Qt/PySide and other third-party components retain their respective licenses. Read THIRD_PARTY_NOTICES.md, LICENSES/, and THIRD_PARTY_SOURCES.md. Third-party source archives are provided for their license requirements; they are not NETMAP application source code.

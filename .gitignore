@@ -1,11 +1,12 @@
-# NETMAP is distributed through GitHub Release assets, not as repository source.
-NETMAP
-NETMAP-*
-*.zip
-*.tar.xz
-SHA256SUMS
+# The compiled application itself is distributed as a verified GitHub Release ZIP.
+# The repository contains only the small bootstrap launcher and documentation.
+/NETMAP
+/NETMAP-*.zip
+/NETMAP-*.tar.xz
+/SHA256SUMS
+/.runtime/
 
-# Never place NETMAP application source or development artifacts here.
+# Never put the NETMAP application source or development artifacts here.
 *.py
 *.pyw
 *.pyc
